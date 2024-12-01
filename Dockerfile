@@ -9,7 +9,7 @@ ENV SMA_FFPROBE_PATH /usr/local/bin/ffprobe
 ENV SMA_FFMPEG_URL https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-linux64-gpl-shared.tar.xz
 ENV LD_LIBRARY_PATH /usr/lib:/usr/local/lib
 
-# Install dependencies, glibc, and NVIDIA-enabled FFmpeg
+# Install dependencies, gcompat, and NVIDIA-enabled FFmpeg
 RUN \
   apk update && \
   apk add --no-cache \
@@ -19,15 +19,7 @@ RUN \
     py3-pip \
     py3-virtualenv \
     ca-certificates \
-    libstdc++ && \
-  # Remove gcompat to avoid conflicts with glibc
-  apk del gcompat && \
-  # Install glibc for compatibility with precompiled FFmpeg
-  wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-  glibc_version=$(curl -s https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | grep '"tag_name"' | cut -d '"' -f 4) && \
-  wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${glibc_version}/glibc-${glibc_version}.apk && \
-  apk add --no-cache ./glibc-${glibc_version}.apk && \
-  rm -f ./glibc-${glibc_version}.apk && \
+    gcompat && \
   # Download and extract NVIDIA-enabled FFmpeg from BtbN
   wget -O /tmp/ffmpeg.tar.xz ${SMA_FFMPEG_URL} && \
   mkdir -p /tmp/ffmpeg && \
