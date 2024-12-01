@@ -20,9 +20,10 @@ RUN \
     ca-certificates && \
   # Install glibc for compatibility with precompiled FFmpeg
   wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-  wget https://github.com/sgerrand/alpine-pkg-glibc/releases/latest/download/glibc-2.35-r0.apk && \
-  apk add --no-cache ./glibc-2.35-r0.apk && \
-  rm -f ./glibc-2.35-r0.apk && \
+  glibc_version=$(curl -s https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")') && \
+  wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${glibc_version}/glibc-${glibc_version}.apk && \
+  apk add --no-cache ./glibc-${glibc_version}.apk && \
+  rm -f ./glibc-${glibc_version}.apk && \
   # Download and extract NVIDIA-enabled FFmpeg from BtbN
   wget -O /tmp/ffmpeg.tar.xz ${SMA_FFMPEG_URL} && \
   tar -xvf /tmp/ffmpeg.tar.xz -C /usr/local/bin/ --strip-components=1 && \
