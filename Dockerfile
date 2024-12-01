@@ -6,35 +6,51 @@ ENV SMA_RS Sonarr
 ENV SMA_UPDATE false
 ENV SMA_FFMPEG_PATH /usr/local/bin/ffmpeg
 ENV SMA_FFPROBE_PATH /usr/local/bin/ffprobe
-ENV SMA_FFMPEG_URL https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-linux64-gpl-shared.tar.xz
 
-# Install dependencies, glibc, and NVIDIA-enabled FFmpeg
-RUN \
-  apk update && \
-  apk add --no-cache \
+# Install build tools and dependencies for FFmpeg
+RUN apk update && apk add --no-cache \
     git \
     wget \
     python3 \
     py3-pip \
     py3-virtualenv \
     ca-certificates \
+    gcc \
+    g++ \
+    make \
+    musl-dev \
+    libgcc \
     libstdc++ \
-    libgcc && \
-  # Install glibc for compatibility with precompiled FFmpeg
-  wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-  glibc_version=$(curl -s https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | grep '"tag_name"' | cut -d '"' -f 4) && \
-  wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${glibc_version}/glibc-${glibc_version}.apk && \
-  apk add --no-cache ./glibc-${glibc_version}.apk && \
-  rm -f ./glibc-${glibc_version}.apk && \
-  # Download and extract NVIDIA-enabled FFmpeg from BtbN
-  wget -O /tmp/ffmpeg.tar.xz ${SMA_FFMPEG_URL} && \
-  mkdir -p /tmp/ffmpeg && \
-  tar -xvf /tmp/ffmpeg.tar.xz -C /tmp/ffmpeg && \
-  mv /tmp/ffmpeg/ffmpeg-master-latest-linux64-gpl-shared/bin/ffmpeg /usr/local/bin/ && \
-  mv /tmp/ffmpeg/ffmpeg-master-latest-linux64-gpl-shared/bin/ffprobe /usr/local/bin/ && \
-  cp -r /tmp/ffmpeg/ffmpeg-master-latest-linux64-gpl-shared/lib/* /usr/glibc-compat/lib/ && \
-  rm -rf /tmp/ffmpeg /tmp/ffmpeg.tar.xz && \
-  chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
+    yasm \
+    nasm \
+    x264-dev \
+    x265-dev \
+    libvpx-dev \
+    libvorbis-dev \
+    libopus-dev \
+    lame-dev \
+    zlib-dev \
+    libwebp-dev \
+    libtheora-dev && \
+  # Clone and build FFmpeg from source
+  git clone --depth=1 https://git.ffmpeg.org/ffmpeg.git /tmp/ffmpeg && \
+  cd /tmp/ffmpeg && \
+  ./configure --prefix=/usr/local \
+              --enable-gpl \
+              --enable-nonfree \
+              --enable-libx264 \
+              --enable-libx265 \
+              --enable-libvpx \
+              --enable-libvorbis \
+              --enable-libopus \
+              --enable-libmp3lame \
+              --enable-libwebp \
+              --enable-libtheora && \
+  make -j$(nproc) && \
+  make install && \
+  cd / && rm -rf /tmp/ffmpeg && \
+  apk del gcc g++ make musl-dev && \
+  rm -rf /var/cache/apk/*
 
 # Set up Sickbeard MP4 Automator
 RUN \
