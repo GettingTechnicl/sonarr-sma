@@ -7,6 +7,7 @@ ENV SMA_UPDATE false
 ENV SMA_FFMPEG_PATH /usr/local/bin/ffmpeg
 ENV SMA_FFPROBE_PATH /usr/local/bin/ffprobe
 ENV SMA_FFMPEG_URL https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-linux64-gpl-shared.tar.xz
+ENV LD_LIBRARY_PATH /usr/lib:/usr/local/lib
 
 # Install dependencies, glibc, and NVIDIA-enabled FFmpeg
 RUN \
