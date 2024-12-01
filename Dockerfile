@@ -17,7 +17,9 @@ RUN \
     python3 \
     py3-pip \
     py3-virtualenv \
-    ca-certificates && \
+    ca-certificates \
+    libstdc++ \
+    libc6-compat && \
   # Install glibc for compatibility with precompiled FFmpeg
   wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
   glibc_version=$(curl -s https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | grep '"tag_name"' | cut -d '"' -f 4) && \
@@ -26,8 +28,12 @@ RUN \
   rm -f ./glibc-${glibc_version}.apk && \
   # Download and extract NVIDIA-enabled FFmpeg from BtbN
   wget -O /tmp/ffmpeg.tar.xz ${SMA_FFMPEG_URL} && \
-  tar -xvf /tmp/ffmpeg.tar.xz -C /usr/local/bin/ --strip-components=2 ffmpeg-master-latest-linux64-gpl-shared/bin/ffmpeg ffmpeg-master-latest-linux64-gpl-shared/bin/ffprobe && \
-  rm -rf /tmp/ffmpeg.tar.xz && \
+  mkdir -p /tmp/ffmpeg && \
+  tar -xvf /tmp/ffmpeg.tar.xz -C /tmp/ffmpeg && \
+  mv /tmp/ffmpeg/ffmpeg-master-latest-linux64-gpl-shared/bin/ffmpeg /usr/local/bin/ && \
+  mv /tmp/ffmpeg/ffmpeg-master-latest-linux64-gpl-shared/bin/ffprobe /usr/local/bin/ && \
+  cp -r /tmp/ffmpeg/ffmpeg-master-latest-linux64-gpl-shared/lib/* /usr/lib/ && \
+  rm -rf /tmp/ffmpeg /tmp/ffmpeg.tar.xz && \
   chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
 
 # Set up Sickbeard MP4 Automator
