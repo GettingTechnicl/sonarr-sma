@@ -20,7 +20,7 @@ RUN \
     ca-certificates && \
   # Install glibc for compatibility with precompiled FFmpeg
   wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-  glibc_version=$(curl -s https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")') && \
+  glibc_version=$(curl -s https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | grep '"tag_name"' | cut -d '"' -f 4) && \
   wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${glibc_version}/glibc-${glibc_version}.apk && \
   apk add --no-cache ./glibc-${glibc_version}.apk && \
   rm -f ./glibc-${glibc_version}.apk && \
