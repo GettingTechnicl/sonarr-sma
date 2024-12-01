@@ -26,7 +26,7 @@ RUN \
   rm -f ./glibc-${glibc_version}.apk && \
   # Download and extract NVIDIA-enabled FFmpeg from BtbN
   wget -O /tmp/ffmpeg.tar.xz ${SMA_FFMPEG_URL} && \
-  tar -xvf /tmp/ffmpeg.tar.xz -C /usr/local/bin/ --strip-components=1 && \
+  tar -xvf /tmp/ffmpeg.tar.xz -C /usr/local/bin/ --strip-components=2 ffmpeg-master-latest-linux64-gpl-shared/bin/ffmpeg ffmpeg-master-latest-linux64-gpl-shared/bin/ffprobe && \
   rm -rf /tmp/ffmpeg.tar.xz && \
   chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
 
