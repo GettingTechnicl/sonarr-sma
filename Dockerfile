@@ -18,8 +18,9 @@ RUN \
     py3-pip \
     py3-virtualenv \
     ca-certificates \
-    libstdc++ \
-    libc6-compat && \
+    libstdc++ && \
+  # Remove gcompat to avoid conflicts with glibc
+  apk del gcompat && \
   # Install glibc for compatibility with precompiled FFmpeg
   wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
   glibc_version=$(curl -s https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest | grep '"tag_name"' | cut -d '"' -f 4) && \
