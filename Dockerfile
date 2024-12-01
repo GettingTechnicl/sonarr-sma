@@ -26,8 +26,10 @@ RUN \
   rm -f ./glibc-${glibc_version}.apk && \
   # Download and extract NVIDIA-enabled FFmpeg from BtbN
   wget -O /tmp/ffmpeg.tar.xz ${SMA_FFMPEG_URL} && \
-  tar -xvf /tmp/ffmpeg.tar.xz -C /usr/local/bin/ --strip-components=1 && \
-  rm -rf /tmp/ffmpeg.tar.xz && \
+  tar -xvf /tmp/ffmpeg.tar.xz -C /usr/local/bin/ --strip-components=0 && \
+  mv /usr/local/bin/ffmpeg-master-latest-linux64-gpl-shared/ffmpeg /usr/local/bin/ && \
+  mv /usr/local/bin/ffmpeg-master-latest-linux64-gpl-shared/ffprobe /usr/local/bin/ && \
+  rm -rf /tmp/ffmpeg.tar.xz /usr/local/bin/ffmpeg-master-latest-linux64-gpl-shared && \
   chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
 
 # Set up Sickbeard MP4 Automator
